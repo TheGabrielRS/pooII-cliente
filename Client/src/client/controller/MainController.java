@@ -5,6 +5,9 @@
  */
 package client.controller;
 
+import client.model.FileData;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -50,7 +53,11 @@ public class MainController {
     @FXML
     public void initialize() {
         // TODO
-        populate();
+        FileData myPath = new FileData();
+        
+        
+        observableList = myPath.proto();
+        
         fileList.setItems(observableList);
     }    
     
