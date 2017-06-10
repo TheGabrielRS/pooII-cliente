@@ -19,6 +19,7 @@ import javafx.scene.paint.Color;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import client.model.Conexao;
 /**
  * FXML Controller class
  *
@@ -36,7 +37,8 @@ public class MainController {
     @FXML ProgressBar progressBar;
     
     //Flag para o temporizador
-    boolean flagTempo;
+    private boolean flagTempo;
+    private Conexao con;
     
      // Use Java Collections to create the List.
     List<String> list = new ArrayList<String>();
@@ -52,11 +54,23 @@ public class MainController {
         // TODO
         populate();
         fileList.setItems(observableList);
+        
+        con = new Conexao("localhost",3000);
+        
+        con.conectar();
+        
+        if(con.statusDaConexao())
+            System.out.println("deu bom");
+        else
+            System.out.println("deu ruim");
+        
     }    
     
     @FXML
     public void onSend(){
-        bottomHandler(true);    
+        bottomHandler(true);
+        
+        fileList.getSelectionModel().getSelectedItem();
         
         /*
         Define a Task de contagem de tempo e atualização na tela
