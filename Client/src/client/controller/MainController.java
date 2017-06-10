@@ -17,6 +17,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.paint.Color;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 /**
  * FXML Controller class
  *
@@ -33,7 +35,8 @@ public class MainController {
     @FXML Label tempoDecorridoPosT;
     @FXML ProgressBar progressBar;
     
- 
+    //Flag para o temporizador
+    boolean flagTempo;
     
      // Use Java Collections to create the List.
     List<String> list = new ArrayList<String>();
@@ -53,22 +56,45 @@ public class MainController {
     
     @FXML
     public void onSend(){
-        bottomHandler(true);
-        long tempoInicial = System.currentTimeMillis();
-
-      
+        bottomHandler(true);    
+        
+        /*
+        Define a Task de contagem de tempo e atualização na tela
+        */
+        flagTempo = true;
+        Task taskTempo = new Task<Void>(){
+            public Void call(){
+                final long tempoInicial = System.currentTimeMillis();
+                while(flagTempo){
+                    try{
+                        Thread.sleep(500);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                    Platform.runLater(new Runnable(){
+                        long tempoMillis;
+                        float tempoSec;
+                        public void run(){
+                            tempoMillis = System.currentTimeMillis() - tempoInicial;
+                            tempoSec = tempoMillis / 1000F;
+                            tempoDecorrido.setText(Float.toString(tempoSec));
+                        }
+                    });
+                
+                }
+                return null;
+            }
+        };
+        
+        new Thread(taskTempo).start(); //Inicia a thread com o contador de tempo
         
         serverIP.setText("192.168.1.1");
-        response(1);
+        this.response(1);
         
-        response(0);
+        this.response(0);
+        flagTempo = false; //Encerra o loop da thread de contagem de tempo
+        taskTempo.cancel(); //Encerra a task de contagem de tempo
 
-
-        
-        long tempoMillis = System.currentTimeMillis() - tempoInicial;
-        float tempoSec = tempoMillis / 1000F;
-        tempoDecorrido.setText(String.valueOf(tempoSec));
-        
         bottomHandler(false);
     }
     
@@ -143,4 +169,10 @@ public class MainController {
         list.add("organela.jpeg");
         list.add("SsdasDIAJNONSDssd.bat");
     }
+
+    public Label getTempoDecorrido() {
+        return tempoDecorrido;
+    }
+    
+    
 }
