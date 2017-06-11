@@ -20,6 +20,10 @@ import javafx.scene.paint.Color;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import client.model.Conexao;
+import java.util.concurrent.atomic.AtomicInteger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.paint.Paint;
 /**
  * FXML Controller class
  *
@@ -38,7 +42,7 @@ public class MainController {
     
     //Flag para o temporizador
     private boolean flagTempo;
-    private Conexao con;
+    private Thread conexao;
     
      // Use Java Collections to create the List.
     List<String> list = new ArrayList<String>();
@@ -54,17 +58,9 @@ public class MainController {
         // TODO
         populate();
         fileList.setItems(observableList);
+        this.startConManager("localhost",3000); //Inicia a Thread de Gerenciamento com os valores padrões
         
-        con = new Conexao("localhost",3000);
-        
-        con.conectar();
-        
-        if(con.statusDaConexao())
-            System.out.println("deu bom");
-        else
-            System.out.println("deu ruim");
-        
-    }    
+    }
     
     @FXML
     public void onSend(){
@@ -128,6 +124,7 @@ public class MainController {
     public void onReconnect(){
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Reconectando...");
+        this.startConManager("localhost", 3000); //Reinicia a Thread com os valores passados pelo usuário
         alert.setHeaderText(null);
         alert.setContentText("Pronto!");
         
@@ -183,10 +180,40 @@ public class MainController {
         list.add("organela.jpeg");
         list.add("SsdasDIAJNONSDssd.bat");
     }
-
-    public Label getTempoDecorrido() {
-        return tempoDecorrido;
-    }
     
+    public void startConManager(String host, int port){
+        if(this.conexao != null){ //Caso haja uma thread de Conexão ela será interrompida
+            this.conexao.interrupt();
+        }
+        
+        this.serverIP.setText(host); //Atualiza o label de acordo com o host indicado
+        
+        Conexao objConexao = new Conexao(host, port); //Instancia o objeto para que possa ser definido o listener responsável
+        //Define listener para verificação de status da conexão Cliente/Servidor
+        objConexao.getStatusConexao().addListener(new ChangeListener<Number>(){
+            public void changed(final ObservableValue<? extends Number> observable,
+          final Number oldValue, final Number newValue){
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(newValue.intValue() == 1){
+                            serverStatus.setText("Conectado");
+                            serverStatus.setTextFill(Paint.valueOf(Color.GREEN.toString()));
+                        }else{
+                            serverStatus.setText("Desconectado");
+                            serverStatus.setTextFill(Paint.valueOf(Color.RED.toString()));
+                        }
+                        
+                    }
+                });
+            }
+        });
+        
+        this.conexao = new Thread(objConexao); //define a Thread de Conexão com os devidos parâmetros 
+        this.conexao.setDaemon(true);
+        this.conexao.start(); //Inicia a Thread de Conexão
+        
+        
+    }
     
 }
