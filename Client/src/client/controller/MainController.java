@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Paint;
+import client.model.FileData;
+import javafx.scene.control.Button;
 /**
  * FXML Controller class
  *
@@ -39,10 +41,14 @@ public class MainController {
     @FXML Label tempoDecorridoPreT;
     @FXML Label tempoDecorridoPosT;
     @FXML ProgressBar progressBar;
+    @FXML Button btnEnviar;
     
     //Flag para o temporizador
     private boolean flagTempo;
+    //Task para o temporizador
+    Task taskTempo;
     private Thread conexao;
+    private Conexao objConexao;
     
      // Use Java Collections to create the List.
     List<String> list = new ArrayList<String>();
@@ -58,52 +64,15 @@ public class MainController {
         // TODO
         populate();
         fileList.setItems(observableList);
-        this.startConManager("localhost",3000); //Inicia a Thread de Gerenciamento com os valores padrões
+        this.startCon("localhost",3000); //Inicia a Thread de Gerenciamento com os valores padrões
         
     }
     
     @FXML
     public void onSend(){
         bottomHandler(true);
-        
-        fileList.getSelectionModel().getSelectedItem();
-        
-        /*
-        Define a Task de contagem de tempo e atualização na tela
-        */
-        flagTempo = true;
-        Task taskTempo = new Task<Void>(){
-            public Void call(){
-                final long tempoInicial = System.currentTimeMillis();
-                while(flagTempo){
-                    try{
-                        Thread.sleep(500);
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
-                    Platform.runLater(new Runnable(){
-                        long tempoMillis;
-                        float tempoSec;
-                        public void run(){
-                            tempoMillis = System.currentTimeMillis() - tempoInicial;
-                            tempoSec = tempoMillis / 1000F;
-                            tempoDecorrido.setText(Float.toString(tempoSec));
-                        }
-                    });
                 
-                }
-                return null;
-            }
-        };
-        
-        new Thread(taskTempo).start(); //Inicia a thread com o contador de tempo
-        
-        serverIP.setText("192.168.1.1");
-        this.response(1);
-        
-        this.response(0);
-        flagTempo = false; //Encerra o loop da thread de contagem de tempo
-        taskTempo.cancel(); //Encerra a task de contagem de tempo
+        this.objConexao.getMensagem().set((String)fileList.getSelectionModel().getSelectedItem());
 
         bottomHandler(false);
     }
@@ -124,7 +93,7 @@ public class MainController {
     public void onReconnect(){
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Reconectando...");
-        this.startConManager("localhost", 3000); //Reinicia a Thread com os valores passados pelo usuário
+        this.startCon("localhost", 3000); //Reinicia a Thread com os valores passados pelo usuário
         alert.setHeaderText(null);
         alert.setContentText("Pronto!");
         
@@ -148,8 +117,8 @@ public class MainController {
     * função de resposta do servidor
     * status, true para sucesso, false para falha
     */
-    public void response(Integer status){
-        if(status > 0){
+    public void response(boolean status){
+        if(status){
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Sucesso!");
             alert.setHeaderText(null);
@@ -181,16 +150,16 @@ public class MainController {
         list.add("SsdasDIAJNONSDssd.bat");
     }
     
-    public void startConManager(String host, int port){
+    public void startCon(String host, int port){
         if(this.conexao != null){ //Caso haja uma thread de Conexão ela será interrompida
             this.conexao.interrupt();
         }
         
         this.serverIP.setText(host); //Atualiza o label de acordo com o host indicado
         
-        Conexao objConexao = new Conexao(host, port); //Instancia o objeto para que possa ser definido o listener responsável
+        this.objConexao = new Conexao(host, port); //Instancia o objeto para que possa ser definido o listener responsável
         //Define listener para verificação de status da conexão Cliente/Servidor
-        objConexao.getStatusConexao().addListener(new ChangeListener<Number>(){
+        this.objConexao.getStatusConexao().addListener(new ChangeListener<Number>(){
             public void changed(final ObservableValue<? extends Number> observable,
           final Number oldValue, final Number newValue){
                 Platform.runLater(new Runnable() {
@@ -199,13 +168,64 @@ public class MainController {
                         if(newValue.intValue() == 1){
                             serverStatus.setText("Conectado");
                             serverStatus.setTextFill(Paint.valueOf(Color.GREEN.toString()));
+                            btnEnviar.setDisable(false);
                         }else{
                             serverStatus.setText("Desconectado");
                             serverStatus.setTextFill(Paint.valueOf(Color.RED.toString()));
+                            btnEnviar.setDisable(true);
                         }
                         
                     }
                 });
+            }
+        });
+        
+        this.objConexao.getMensagem().addListener(new ChangeListener<String>(){
+            public void changed(final ObservableValue<? extends String> observable,
+          final String oldValue, final String newValue){
+                response(objConexao.sendFile());
+            }
+        });
+        
+        this.objConexao.getTempoInicial().addListener(new ChangeListener<Number>(){
+            public void changed(final ObservableValue<? extends Number> observable,
+          final Number oldValue, final Number newValue){
+                /*
+                Define a Task de contagem de tempo e atualização na tela
+                */
+                flagTempo = true;
+                taskTempo = new Task<Void>(){
+                    public Void call(){
+                        while(flagTempo){
+                            try{
+                                Thread.sleep(500);
+                            }catch(Exception e){
+                            }
+                            Platform.runLater(new Runnable(){
+                                float tempoMillis;
+                                float tempoSec;
+                                public void run(){
+                                    tempoMillis = System.currentTimeMillis() - newValue.floatValue();
+                                    tempoSec = tempoMillis / 1000F;
+                                    tempoDecorrido.setText(Float.toString(tempoSec));
+                                }
+                            });
+                        }
+                        return null;
+                    }
+                };
+                new Thread(taskTempo).start(); //Inicia a thread com o contador de tempo
+                
+            }
+        });
+        
+        this.objConexao.getAcabouTransacao().addListener(new ChangeListener<Boolean>(){
+            public void changed(final ObservableValue<? extends Boolean> observable,
+          final Boolean oldValue, final Boolean newValue){
+                if(newValue){
+                    flagTempo = false; //Encerra o loop da thread de contagem de tempo
+                    taskTempo.cancel(); //Encerra a task de contagem de tempo
+                }
             }
         });
         

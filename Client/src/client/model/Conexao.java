@@ -5,11 +5,20 @@
  */
 package client.model;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  *
@@ -21,12 +30,17 @@ public class Conexao implements Runnable{
     private int serverPort;
     private Socket con;
     private IntegerProperty statusConexao;
-    
+    private StringProperty mensagem;
+    private FloatProperty tempoInicial;
+    private BooleanProperty acabouTransacao;
 
     public Conexao(String computerName, int serverPort) {
         this.computerName = computerName;
         this.serverPort = serverPort;
         this.statusConexao = new SimpleIntegerProperty(-1);
+        this.mensagem = new SimpleStringProperty("");
+        this.tempoInicial = new SimpleFloatProperty(0);
+        this.acabouTransacao = new SimpleBooleanProperty(false);
     }
     
     public void run(){
@@ -62,5 +76,33 @@ public class Conexao implements Runnable{
     
     public IntegerProperty getStatusConexao() {
         return statusConexao;
+    }
+
+    public StringProperty getMensagem() {
+        return mensagem;
+    }
+
+    public FloatProperty getTempoInicial() {
+        return tempoInicial;
+    }
+
+    public BooleanProperty getAcabouTransacao() {
+        return acabouTransacao;
+    }
+    
+    public boolean sendFile(){
+        try{
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
+            this.tempoInicial.set(System.currentTimeMillis());
+            out.write(mensagem.get());
+            out.newLine();
+            out.flush();
+            this.acabouTransacao.set(true);
+            this.acabouTransacao.set(false);
+            return true;
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 }
