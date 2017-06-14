@@ -108,7 +108,12 @@ public class Conexao implements Runnable{
     
     public void endSocket(){
         try{
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
+            out.write("c53255317bb11707d0f614696b3ce6f221d0e2f2");
+            out.newLine();
+            out.flush();
             con.close();
+            System.out.println("matou");
         }catch(Exception e){
             e.printStackTrace();
         }
