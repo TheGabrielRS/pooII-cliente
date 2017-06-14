@@ -105,4 +105,12 @@ public class Conexao implements Runnable{
             return false;
         }
     }
+    
+    public void endSocket(){
+        try{
+            con.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 }
