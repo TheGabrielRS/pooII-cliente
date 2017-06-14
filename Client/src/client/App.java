@@ -17,6 +17,16 @@ import javafx.stage.Stage;
  */
 public class App extends Application {
     
+    private static Stage primaryStage; // **Declare static Stage**
+
+    private void setPrimaryStage(Stage stage) {
+        App.primaryStage = stage;
+    }
+
+    static public Stage getPrimaryStage() {
+        return App.primaryStage;
+    }
+    
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("view/MainView.fxml"));
@@ -26,6 +36,7 @@ public class App extends Application {
         stage.setTitle("UFCSPA - Programação Orientada a Objetos II - Cliente");
         stage.setScene(scene);
         stage.setResizable(false);
+        this.setPrimaryStage(stage);
         stage.show();
     }
 
