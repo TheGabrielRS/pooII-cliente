@@ -5,6 +5,7 @@
  */
 package client.controller;
 
+import client.App;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -17,8 +18,15 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import client.model.Conexao;
 import client.model.Files;
+import java.io.File;
 import java.util.Optional;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.paint.Paint;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -45,88 +53,38 @@ public class MainController {
     Label tempoDecorridoPosT;
     @FXML
     ProgressBar progressBar;
-
-    Files file;
-    String fileName;
-
-    //Flag para testes sem o servidor
-    Boolean flagStandalone = false;
+    @FXML
+    Button btnEnviar;
 
     //Flag para o temporizador
     private boolean flagTempo;
-    private Conexao con;
+    //Task para o temporizador
+    Task taskTempo;
+    private Thread conexao;
+    private Conexao objConexao;
+    private boolean reconnect;
+
+    Files file;
 
     /**
      * Initializes the controller class.
      */
     @FXML
     public void initialize() {
-
+        // TODO
         file = new Files();
 
-        if (flagStandalone) {
-            con = new Conexao("localhost", 3000);
+        onFileDef();
 
-            con.conectar();
+        this.startCon("localhost", 3000); //Inicia a Thread de Gerenciamento com os valores padrões
 
-            if (con.statusDaConexao()) {
-                System.out.println("deu bom");
-            } else {
-                System.out.println("deu ruim");
-            }
-        }
-
-        do {
-            onFileDef();
-        } while (!populateIt());
     }
 
     @FXML
     public void onSend() {
         bottomHandler(true);
 
-        /*
-        *   Pego o item selecionado da lista e coloco
-        *   no texto de qtd. de erros
-         */
-        serverFaults.setText(fileList.getSelectionModel().selectedItemProperty().getValue().toString());
-
-        /*
-        *Define a Task de contagem de tempo e atualização na tela
-         */
-        flagTempo = true;
-        Task taskTempo = new Task<Void>() {
-            public Void call() {
-                final long tempoInicial = System.currentTimeMillis();
-                while (flagTempo) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Platform.runLater(new Runnable() {
-                        long tempoMillis;
-                        float tempoSec;
-
-                        public void run() {
-                            tempoMillis = System.currentTimeMillis() - tempoInicial;
-                            tempoSec = tempoMillis / 1000F;
-                            tempoDecorrido.setText(Float.toString(tempoSec));
-                        }
-                    });
-
-                }
-                return null;
-            }
-        };
-
-        new Thread(taskTempo).start(); //Inicia a thread com o contador de tempo
-
-        this.response(true);
-        this.response(false);
-
-        flagTempo = false; //Encerra o loop da thread de contagem de tempo
-        taskTempo.cancel(); //Encerra a task de contagem de tempo
+        this.objConexao.getMensagem().set((String) fileList.getSelectionModel().getSelectedItem());
 
         bottomHandler(false);
     }
@@ -145,61 +103,26 @@ public class MainController {
 
     @FXML
     public void onReconnect() {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Reconectando...");
-        alert.setHeaderText(null);
+        this.reconnect = true;
+        objConexao.endSocket();
+        this.startCon("localhost", 3000); //Reinicia a Thread com os valores passados pelo usuário
+    }
 
-        //TODO
-        /*
-        * Implementar a reconexão aqui
-        * !
-        * !
-         */
-        //Caso sem conexão com o servidor, não checar status
-        if (flagStandalone) {
-            if (con.statusDaConexao()) {
-                alert.setContentText("Conectado!");
+    public void alertOnReconnect(boolean success) {
+        if (this.reconnect) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Reconectando...");
+            alert.setHeaderText(null);
+            if (success) {
+                alert.setContentText("Conexão realizada com sucesso!");
             } else {
-                alert.setContentText("Ooops, verifique a conexão com o servidor e"
-                        + " sua conexão com a internet.");
+                alert.setContentText("Não foi possível reconectar!");
             }
-        } else {
-            alert.setContentText("Ooops, verifique a conexão com o servidor e"
-                    + " sua conexão com a internet.");
+            alert.showAndWait();
         }
-
-        alert.showAndWait();
+        this.reconnect = false;
     }
 
-    @FXML
-    public void onIpDef() {
-        TextInputDialog dialog = new TextInputDialog("192.168.0.1");
-        dialog.setTitle("Conexão");
-        dialog.setHeaderText("Configuração do Conexão");
-        dialog.setContentText("IP:");
-
-        Optional<String> result = dialog.showAndWait();
-
-        //TODO
-        /*
-        *   Implementar o getter e setter para o Ip
-        *   !
-         */
-        result.ifPresent(name -> System.out.println("Your name: " + name));
-    }
-
-    @FXML
-    public void onFileDef() {
-        TextInputDialog dialog = new TextInputDialog(file.getPath());
-        dialog.setTitle("Arquivos");
-        dialog.setHeaderText("Configuração do Caminho");
-        dialog.setContentText("Caminho:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(path -> file.setPath(path.replace('/', '\\')));
-    }
-
-    //Função para alternar o inferior da GUI
     public void bottomHandler(boolean key) {
         if (key) {
             tempoDecorrido.setTextFill(Color.BLACK);
@@ -213,11 +136,43 @@ public class MainController {
         }
     }
 
+    @FXML
+    public void onIpDef() {
+        TextInputDialog dialog = new TextInputDialog(objConexao.getComputerName());
+        dialog.setTitle("Conexão");
+        dialog.setHeaderText("Configuração do Conexão");
+        dialog.setContentText("IP:");
+
+        Optional<String> result = dialog.showAndWait();
+        
+        this.reconnect = true;
+        objConexao.endSocket();
+        result.ifPresent(computerName -> this.startCon(computerName, 3000));
+    }
+
+    @FXML
+    public void onFileDef() {
+        try {
+
+            Stage stage = App.getPrimaryStage();
+
+            final DirectoryChooser directoryChooser = new DirectoryChooser();
+            final File selectedDirectory;
+            selectedDirectory = directoryChooser.showDialog(stage);
+            if (selectedDirectory != null) {
+                selectedDirectory.getAbsolutePath();
+            }
+            file.setPath(selectedDirectory.toString());
+            this.populateIt();
+        } catch (Exception e) {
+        }
+    }
+
     /*
     * função de resposta do servidor
-    * status: true para sucesso, false para falha
+    * status, true para sucesso, false para falha
      */
-    public void response(Boolean status) {
+    public void response(boolean status) {
         if (status) {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Sucesso!");
@@ -229,7 +184,7 @@ public class MainController {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Erro");
             alert.setHeaderText("Falha no envio!");
-            alert.setContentText("Ooops, verifique a conexão com o servidor e"
+            alert.setContentText("Ooops, confira a conexão com o servidor e"
                     + " sua conexão com a internet.");
 
             alert.showAndWait();
@@ -237,25 +192,96 @@ public class MainController {
     }
 
     //Função para popular a lista
-    public Boolean populateIt() {
-        try {
-            fileList.setItems(file.getFilesNames());
-            return true;
-        } catch (Exception e) {
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Cuidado!");
-            alert.setHeaderText("Arquivo Inválido");
-            alert.setContentText("¹Verifique o caminho de arquivo inserido"
-                    + " e tente novamente."
-                    + "\n" + "²Verifique se a pasta images existe.");
+    public void populateIt() {
+        fileList.setItems(file.getFilesNames());
+    }
 
-            alert.showAndWait();
-            return false;
+    public void startCon(String host, int port) {
+        if (this.conexao != null) { //Caso haja uma thread de Conexão ela será interrompida
+            this.conexao.interrupt();
         }
+
+        //TODO review
+        //serverIP.setText("hahah"); //Atualiza o label de acordo com o host indicado
+        this.objConexao = new Conexao(host, port); //Instancia o objeto para que possa ser definido o listener responsável
+        //Define listener para verificação de status da conexão Cliente/Servidor
+        this.objConexao.getStatusConexao().addListener(new ChangeListener<Number>() {
+            public void changed(final ObservableValue<? extends Number> observable,
+                    final Number oldValue, final Number newValue) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (newValue.intValue() == 1) {
+                            serverStatus.setText("Conectado");
+                            serverStatus.setTextFill(Paint.valueOf(Color.GREEN.toString()));
+                            btnEnviar.setDisable(false);
+                            alertOnReconnect(true);
+                        } else {
+                            serverStatus.setText("Desconectado");
+                            serverStatus.setTextFill(Paint.valueOf(Color.RED.toString()));
+                            btnEnviar.setDisable(true);
+                            alertOnReconnect(false);
+                        }
+                        serverIp.setText(objConexao.getComputerName());
+                    }
+                });
+            }
+        });
+
+        this.objConexao.getMensagem().addListener(new ChangeListener<String>() {
+            public void changed(final ObservableValue<? extends String> observable,
+                    final String oldValue, final String newValue) {
+                response(objConexao.sendFile());
+            }
+        });
+
+        this.objConexao.getTempoInicial().addListener(new ChangeListener<Number>() {
+            public void changed(final ObservableValue<? extends Number> observable,
+                    final Number oldValue, final Number newValue) {
+                /*
+                Define a Task de contagem de tempo e atualização na tela
+                 */
+                flagTempo = true;
+                taskTempo = new Task<Void>() {
+                    public Void call() {
+                        while (flagTempo) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (Exception e) {
+                            }
+                            Platform.runLater(new Runnable() {
+                                float tempoMillis;
+                                float tempoSec;
+
+                                public void run() {
+                                    tempoMillis = System.currentTimeMillis() - newValue.floatValue();
+                                    tempoSec = tempoMillis / 1000F;
+                                    tempoDecorrido.setText(Float.toString(tempoSec));
+                                }
+                            });
+                        }
+                        return null;
+                    }
+                };
+                new Thread(taskTempo).start(); //Inicia a thread com o contador de tempo
+
+            }
+        });
+
+        this.objConexao.getAcabouTransacao().addListener(new ChangeListener<Boolean>() {
+            public void changed(final ObservableValue<? extends Boolean> observable,
+                    final Boolean oldValue, final Boolean newValue) {
+                if (newValue) {
+                    flagTempo = false; //Encerra o loop da thread de contagem de tempo
+                    taskTempo.cancel(); //Encerra a task de contagem de tempo
+                }
+            }
+        });
+
+        this.conexao = new Thread(objConexao); //define a Thread de Conexão com os devidos parâmetros 
+        this.conexao.setDaemon(true);
+        this.conexao.start(); //Inicia a Thread de Conexão
+
     }
 
-    //Função para adquirir o tempo decorrido
-    public Label getTempoDecorrido() {
-        return tempoDecorrido;
-    }
 }
