@@ -65,6 +65,7 @@ public class MainController {
     private boolean reconnect;
 
     Files file;
+    Integer counting;
 
     /**
      * Initializes the controller class.
@@ -73,18 +74,20 @@ public class MainController {
     public void initialize() {
         // TODO
         file = new Files();
-
-        onFileDef();
-
+        serverSends.setText("0");
+        serverFaults.setText("0");
+        
         this.startCon("localhost", 3000); //Inicia a Thread de Gerenciamento com os valores padrões
+
+        serverIp.setText(objConexao.getComputerName());
 
     }
 
     @FXML
     public void onSend() {
-        bottomHandler(true);
-
-        this.objConexao.getMensagem().set((String) fileList.getSelectionModel().getSelectedItem());
+        bottomHandler(true);   
+        
+        this.objConexao.getMensagem().set(file.getFilesNames().toString());
 
         bottomHandler(false);
     }
@@ -105,7 +108,7 @@ public class MainController {
     public void onReconnect() {
         this.reconnect = true;
         objConexao.endSocket();
-        this.startCon("localhost", 3000); //Reinicia a Thread com os valores passados pelo usuário
+        this.startCon(objConexao.getComputerName(), 3000); //Reinicia a Thread com os valores passados pelo usuário
     }
 
     public void alertOnReconnect(boolean success) {
@@ -148,14 +151,14 @@ public class MainController {
         this.reconnect = true;
         objConexao.endSocket();
         result.ifPresent(computerName -> this.startCon(computerName, 3000));
+        serverIp.setText(objConexao.getComputerName());
     }
 
     @FXML
     public void onFileDef() {
         try {
-
             Stage stage = App.getPrimaryStage();
-
+            
             final DirectoryChooser directoryChooser = new DirectoryChooser();
             final File selectedDirectory;
             selectedDirectory = directoryChooser.showDialog(stage);
@@ -164,6 +167,8 @@ public class MainController {
             }
             file.setPath(selectedDirectory.toString());
             this.populateIt();
+            this.counting = file.getCountFiles();
+            System.out.println(this.counting.toString());
         } catch (Exception e) {
         }
     }
@@ -178,7 +183,7 @@ public class MainController {
             alert.setTitle("Sucesso!");
             alert.setHeaderText(null);
             alert.setContentText("Transação bem-sucedida!");
-
+            serverCount(true);
             alert.showAndWait();
         } else {
             Alert alert = new Alert(AlertType.ERROR);
@@ -186,7 +191,7 @@ public class MainController {
             alert.setHeaderText("Falha no envio!");
             alert.setContentText("Ooops, confira a conexão com o servidor e"
                     + " sua conexão com a internet.");
-
+            serverCount(false);
             alert.showAndWait();
         }
     }
@@ -222,7 +227,6 @@ public class MainController {
                             btnEnviar.setDisable(true);
                             alertOnReconnect(false);
                         }
-                        serverIp.setText(objConexao.getComputerName());
                     }
                 });
             }
@@ -281,7 +285,17 @@ public class MainController {
         this.conexao = new Thread(objConexao); //define a Thread de Conexão com os devidos parâmetros 
         this.conexao.setDaemon(true);
         this.conexao.start(); //Inicia a Thread de Conexão
-
     }
-
+    
+    public void serverCount(boolean response){
+        Integer s;
+        Integer f;
+        if(response){
+            s = 1 + (Integer.parseInt(serverSends.getText().toString()));
+            serverSends.setText(s.toString());
+        } else {
+            f = 1 + (Integer.parseInt(serverFaults.getText().toString()));
+            serverFaults.setText(f.toString());
+        }        
+    }    
 }
