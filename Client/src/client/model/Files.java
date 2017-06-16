@@ -17,7 +17,7 @@ import javafx.collections.ObservableList;
  */
 public class Files {
     private int count;
-    private String path = "C:\\Users\\helio\\Documents\\GitHub\\pooII-cliente\\Client\\src\\client\\images";
+    private String path = "C:\\Users\\heliof\\Desktop\\pooII-cliente\\Client\\src\\client\\images";
 
     public String getPath() {
         return this.path;
