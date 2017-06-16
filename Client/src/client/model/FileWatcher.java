@@ -6,7 +6,9 @@
 package client.model;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 /**
  *
@@ -17,15 +19,21 @@ public class FileWatcher implements Runnable {
     private Files file;
     private int oldCount;
     private BooleanProperty flag;
+    private IntegerProperty newCount;
 
     public FileWatcher(Files objFile) {
         this.file = objFile;
         this.oldCount = this.file.getCountFiles();
         this.flag = new SimpleBooleanProperty(false);
+        this.newCount = new SimpleIntegerProperty(oldCount);
     }
 
     public BooleanProperty getFlag() {
         return flag;
+    }
+
+    public IntegerProperty getNewCount() {
+        return newCount;
     }
 
     public Files getFile() {
@@ -42,10 +50,10 @@ public class FileWatcher implements Runnable {
             try {
                 Thread.sleep(5000);
                 file.getFilesNames();
-                int newCount = file.getCountFiles();
-                if (newCount != oldCount) {
+                newCount.set(file.getCountFiles());
+                if (newCount.get() != oldCount) {
                     this.flag.set(true);
-                    this.oldCount = newCount;
+                    this.oldCount = newCount.get();
                     this.flag.set(false);
                 }
             } catch (Exception e) {

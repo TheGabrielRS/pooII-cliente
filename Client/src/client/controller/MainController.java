@@ -274,7 +274,7 @@ public class MainController {
             this.populateIt();
             this.counting = file.getCountFiles();
             System.out.println(this.counting.toString());
-            startFileWatcher();
+            startFileWatcherInteger();
         } catch (Exception e) {
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
         }
@@ -437,7 +437,7 @@ public class MainController {
         this.objConexao.getMensagem().addListener(new ChangeListener<String>() {
             public void changed(final ObservableValue<? extends String> observable,
                     final String oldValue, final String newValue) {
-                response(objConexao.sendFile());
+                Platform.runLater(()->{response(objConexao.sendFile());});
             }
         });
 
@@ -524,20 +524,59 @@ public class MainController {
         }
     }
 
-    public void startFileWatcher() {
+//    public void startFileWatcher() {
+//        this.fileWatcher = new FileWatcher(this.file);
+//        this.fileWatcher.getFlag().addListener(new ChangeListener<Boolean>() {
+//            public void changed(final ObservableValue<? extends Boolean> observable,
+//                    final Boolean oldValue, final Boolean newValue) {
+//                if (newValue) {
+//                    objConexao.getMensagem().set("fileWatcher");
+//                    objConexao.getMensagem().set(fileWatcher.getFile().getCountFiles() 
+//                            + ":" 
+//                            + fileWatcher.getInitCount());
+//                    
+//                    System.out.println("deletou");
+//                    Platform.runLater(() -> {
+//                        populateIt();
+//                    });
+//                }
+//            }
+//        });
+//        Thread t = new Thread(this.fileWatcher);
+//        t.setDaemon(true);
+//        t.start();
+//    }
+    
+    public void startFileWatcherInteger(){
         this.fileWatcher = new FileWatcher(this.file);
-        this.fileWatcher.getFlag().addListener(new ChangeListener<Boolean>() {
-            public void changed(final ObservableValue<? extends Boolean> observable,
-                    final Boolean oldValue, final Boolean newValue) {
-                if (newValue) {
-                    objConexao.getMensagem().set("fileWatcher:" 
-                            + (fileWatcher.getFile().getCountFiles()
-                            - fileWatcher.getInitCount()));
-                    System.out.println("deletou");
-                    Platform.runLater(()-> {
-                        populateIt();
-                    });
-                }
+        this.fileWatcher.getNewCount().addListener(new ChangeListener<Number>(){
+            public void changed(final ObservableValue<? extends Number> observable,
+                    final Number oldValue, final Number newValue){
+               
+                int adds = (fileWatcher.getFile().getCountFiles()
+                        - fileWatcher.getInitCount());
+                int rmv = (fileWatcher.getInitCount() 
+                        - fileWatcher.getFile().getCountFiles());
+                
+                if(adds < 0)
+                    adds = 0;
+                if(rmv < 0)
+                    rmv = 0;              
+                
+                objConexao.getMensagem().set("fileWatcher:" +
+                        adds
+                        + ":"
+                        + rmv);
+                
+                System.out.println("MSG:" 
+                        + adds
+                        + ":"
+                        + rmv);
+                
+                System.out.println("deletou");
+                Platform.runLater(() -> {
+                    populateIt();
+                });
             }
         });
         Thread t = new Thread(this.fileWatcher);
