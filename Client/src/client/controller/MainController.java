@@ -104,6 +104,7 @@ public class MainController {
 =======
 
     Files file;
+    Integer counting;
 
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
     /**
@@ -119,15 +120,21 @@ public class MainController {
         
 =======
         file = new Files();
-
-        onFileDef();
-
+        serverSends.setText("0");
+        serverFaults.setText("0");
+        
         this.startCon("localhost", 3000); //Inicia a Thread de Gerenciamento com os valores padrões
 
+<<<<<<< HEAD
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
+=======
+        serverIp.setText(objConexao.getComputerName());
+
+>>>>>>> 6015c61... contador e arquivos
     }
     
     @FXML
+<<<<<<< HEAD
     public void onSend(){
         bottomHandler(true);
 <<<<<<< HEAD
@@ -137,6 +144,12 @@ public class MainController {
 
         this.objConexao.getMensagem().set((String) fileList.getSelectionModel().getSelectedItem());
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
+=======
+    public void onSend() {
+        bottomHandler(true);   
+        
+        this.objConexao.getMensagem().set(file.getFilesNames().toString());
+>>>>>>> 6015c61... contador e arquivos
 
         bottomHandler(false);
     }
@@ -161,7 +174,7 @@ public class MainController {
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
         this.reconnect = true;
         objConexao.endSocket();
-        this.startCon("localhost", 3000); //Reinicia a Thread com os valores passados pelo usuário
+        this.startCon(objConexao.getComputerName(), 3000); //Reinicia a Thread com os valores passados pelo usuário
     }
 <<<<<<< HEAD
     
@@ -231,14 +244,14 @@ public class MainController {
         this.reconnect = true;
         objConexao.endSocket();
         result.ifPresent(computerName -> this.startCon(computerName, 3000));
+        serverIp.setText(objConexao.getComputerName());
     }
 
     @FXML
     public void onFileDef() {
         try {
-
             Stage stage = App.getPrimaryStage();
-
+            
             final DirectoryChooser directoryChooser = new DirectoryChooser();
             final File selectedDirectory;
             selectedDirectory = directoryChooser.showDialog(stage);
@@ -247,6 +260,8 @@ public class MainController {
             }
             file.setPath(selectedDirectory.toString());
             this.populateIt();
+            this.counting = file.getCountFiles();
+            System.out.println(this.counting.toString());
         } catch (Exception e) {
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
         }
@@ -277,7 +292,7 @@ public class MainController {
             alert.setTitle("Sucesso!");
             alert.setHeaderText(null);
             alert.setContentText("Transação bem-sucedida!");
-
+            serverCount(true);
             alert.showAndWait();
         } else {
             Alert alert = new Alert(AlertType.ERROR);
@@ -289,7 +304,7 @@ public class MainController {
             alert.setContentText("Ooops, confira a conexão com o servidor e"
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
                     + " sua conexão com a internet.");
-
+            serverCount(false);
             alert.showAndWait();
         }
     }
@@ -365,10 +380,13 @@ public class MainController {
                             alertOnReconnect(false);
                         }
 <<<<<<< HEAD
+<<<<<<< HEAD
                         
 =======
                         serverIp.setText(objConexao.getComputerName());
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
+=======
+>>>>>>> 6015c61... contador e arquivos
                     }
                 });
             }
@@ -478,8 +496,18 @@ public class MainController {
         this.conexao = new Thread(objConexao); //define a Thread de Conexão com os devidos parâmetros 
         this.conexao.setDaemon(true);
         this.conexao.start(); //Inicia a Thread de Conexão
-
     }
-
+    
+    public void serverCount(boolean response){
+        Integer s;
+        Integer f;
+        if(response){
+            s = 1 + (Integer.parseInt(serverSends.getText().toString()));
+            serverSends.setText(s.toString());
+        } else {
+            f = 1 + (Integer.parseInt(serverFaults.getText().toString()));
+            serverFaults.setText(f.toString());
+        }        
+    }    
 }
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
