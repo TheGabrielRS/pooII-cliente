@@ -244,5 +244,9 @@ public class Conexao implements Runnable{
             e.printStackTrace();
         }
     }
+<<<<<<< HEAD
 }
 >>>>>>> 6015c61... contador e arquivos
+=======
+}
+>>>>>>> helio

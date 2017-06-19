@@ -5,6 +5,7 @@
  */
 package client.controller;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -13,6 +14,10 @@ import javafx.collections.ObservableList;
 
 import client.App;
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
+=======
+
+import client.App;
+>>>>>>> helio
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -26,6 +31,7 @@ import javafx.concurrent.Task;
 import client.model.Conexao;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -36,6 +42,9 @@ import javafx.scene.control.Button;
 =======
 import client.model.FileWatcher;
 >>>>>>> a64c381... thread de att dos arquivos
+=======
+import client.model.FileWatcher;
+>>>>>>> helio
 import client.model.Files;
 import java.io.File;
 import java.util.Optional;
@@ -89,7 +98,10 @@ public class MainController {
     @FXML
     Button btnEnviar;
 
+<<<<<<< HEAD
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
+=======
+>>>>>>> helio
     //Flag para o temporizador
     private boolean flagTempo;
     //Task para o temporizador
@@ -97,6 +109,7 @@ public class MainController {
     private Thread conexao;
     private Conexao objConexao;
     private boolean reconnect;
+<<<<<<< HEAD
 <<<<<<< HEAD
     
      // Use Java Collections to create the List.
@@ -106,12 +119,17 @@ public class MainController {
     ObservableList<String> observableList = FXCollections.observableList(list);  
     
 =======
+=======
+>>>>>>> helio
 
     private FileWatcher fileWatcher;
     private Files file;
     private Integer counting;
 
+<<<<<<< HEAD
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
+=======
+>>>>>>> helio
     /**
      * Initializes the controller class.
      */
@@ -119,11 +137,14 @@ public class MainController {
     public void initialize() {
         // TODO
 <<<<<<< HEAD
+<<<<<<< HEAD
         populate();
         fileList.setItems(observableList);
         this.startCon("localhost",3000); //Inicia a Thread de Gerenciamento com os valores padrões
         
 =======
+=======
+>>>>>>> helio
         file = new Files();
         serverSends.setText("0");
         serverFaults.setText("0");
@@ -131,11 +152,16 @@ public class MainController {
         this.startCon("localhost", 3000); //Inicia a Thread de Gerenciamento com os valores padrões
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
 =======
         serverIp.setText(objConexao.getComputerName());
 
 >>>>>>> 6015c61... contador e arquivos
+=======
+        serverIp.setText(objConexao.getComputerName());
+
+>>>>>>> helio
     }
     
     @FXML
@@ -161,7 +187,10 @@ public class MainController {
 
         //this.objConexao.getMensagem().set(file.getFilesNames().toString());
         this.objConexao.getMensagem().set((String) fileList.getSelectionModel().getSelectedItem());
+<<<<<<< HEAD
 >>>>>>> a64c381... thread de att dos arquivos
+=======
+>>>>>>> helio
 
         bottomHandler(false);
     }
@@ -183,11 +212,15 @@ public class MainController {
     public void onReconnect(){
 =======
     public void onReconnect() {
+<<<<<<< HEAD
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
+=======
+>>>>>>> helio
         this.reconnect = true;
         objConexao.endSocket();
         this.startCon(objConexao.getComputerName(), 3000); //Reinicia a Thread com os valores passados pelo usuário
     }
+<<<<<<< HEAD
 <<<<<<< HEAD
     
     public void alertOnReconnect(boolean success){
@@ -215,6 +248,8 @@ public class MainController {
             progressBar.setDisable(key);
             progressBar.setProgress(0);
 =======
+=======
+>>>>>>> helio
 
     public void alertOnReconnect(boolean success) {
         if (this.reconnect) {
@@ -276,7 +311,10 @@ public class MainController {
             System.out.println(this.counting.toString());
             startFileWatcherInteger();
         } catch (Exception e) {
+<<<<<<< HEAD
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
+=======
+>>>>>>> helio
         }
     }
     
@@ -293,10 +331,13 @@ public class MainController {
     * função de resposta do servidor
     * status, true para sucesso, false para falha
 <<<<<<< HEAD
+<<<<<<< HEAD
     */
     public void response(boolean status){
         if(status){
 =======
+=======
+>>>>>>> helio
      */
     public void response(boolean status) {
         if (status) {
@@ -312,10 +353,14 @@ public class MainController {
             alert.setTitle("Erro");
             alert.setHeaderText("Falha no envio!");
 <<<<<<< HEAD
+<<<<<<< HEAD
             alert.setContentText("Ooops, confira a conexão com o servidor e" 
 =======
             alert.setContentText("Ooops, confira a conexão com o servidor e"
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
+=======
+            alert.setContentText("Ooops, confira a conexão com o servidor e"
+>>>>>>> helio
                     + " sua conexão com a internet.");
             serverCount(false);
             alert.showAndWait();
@@ -365,6 +410,7 @@ public class MainController {
         if (this.conexao != null) {
             //Caso haja uma thread de Conexão ela será interrompida
             this.conexao.interrupt();
+<<<<<<< HEAD
         }
 
         //Instancia o objeto para que possa ser definido o listener responsável
@@ -521,9 +567,106 @@ public class MainController {
         } else {
             f = 1 + (Integer.parseInt(serverFaults.getText().toString()));
             serverFaults.setText(f.toString());
+=======
+>>>>>>> helio
+        }
+
+        //Instancia o objeto para que possa ser definido o listener responsável
+        this.objConexao = new Conexao(host, port);
+
+        //Define listener para verificação de status da conexão Cliente/Servidor
+        this.objConexao.getStatusConexao().addListener(new ChangeListener<Number>() {
+            public void changed(final ObservableValue<? extends Number> observable,
+                    final Number oldValue, final Number newValue) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (newValue.intValue() == 1) {
+                            serverStatus.setText("Conectado");
+                            serverStatus.setTextFill(Paint.valueOf(Color.GREEN.toString()));
+                            btnEnviar.setDisable(false);
+                            alertOnReconnect(true);
+                        } else {
+                            serverStatus.setText("Desconectado");
+                            serverStatus.setTextFill(Paint.valueOf(Color.RED.toString()));
+                            btnEnviar.setDisable(true);
+                            alertOnReconnect(false);
+                        }
+                    }
+                });
+            }
+        });
+
+        this.objConexao.getMensagem().addListener(new ChangeListener<String>() {
+            public void changed(final ObservableValue<? extends String> observable,
+                    final String oldValue, final String newValue) {
+                Platform.runLater(()->{response(objConexao.sendFile());});
+            }
+        });
+
+        this.objConexao.getTempoInicial().addListener(new ChangeListener<Number>() {
+            public void changed(final ObservableValue<? extends Number> observable,
+                    final Number oldValue, final Number newValue) {
+                /*
+                Define a Task de contagem de tempo e atualização na tela
+                 */
+                flagTempo = true;
+                taskTempo = new Task<Void>() {
+                    public Void call() {
+                        while (flagTempo) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (Exception e) {
+                            }
+                            Platform.runLater(new Runnable() {
+                                float tempoMillis;
+                                float tempoSec;
+
+                                public void run() {
+                                    tempoMillis = System.currentTimeMillis() - newValue.floatValue();
+                                    tempoSec = tempoMillis / 1000F;
+                                    tempoDecorrido.setText(Float.toString(tempoSec));
+                                }
+                            });
+                        }
+                        return null;
+                    }
+                };
+                new Thread(taskTempo).start(); //Inicia a thread com o contador de tempo
+
+            }
+        });
+
+        this.objConexao.getAcabouTransacao().addListener(new ChangeListener<Boolean>() {
+            public void changed(final ObservableValue<? extends Boolean> observable,
+                    final Boolean oldValue, final Boolean newValue) {
+                if (newValue) {
+                    flagTempo = false; //Encerra o loop da thread de contagem de tempo
+                    taskTempo.cancel(); //Encerra a task de contagem de tempo
+                }
+            }
+        });
+
+        this.conexao = new Thread(objConexao); //define a Thread de Conexão com os devidos parâmetros 
+        this.conexao.setDaemon(true);
+        this.conexao.start(); //Inicia a Thread de Conexão
+    }
+
+<<<<<<< HEAD
+=======
+    public void serverCount(boolean response) {
+        Integer s;
+        Integer f;
+        if (response) {
+            s = 1 + (Integer.parseInt(serverSends.getText().toString()));
+            serverSends.setText(s.toString());
+        } else {
+            f = 1 + (Integer.parseInt(serverFaults.getText().toString()));
+            serverFaults.setText(f.toString());
         }
     }
 
+>>>>>>> helio
 //    public void startFileWatcher() {
 //        this.fileWatcher = new FileWatcher(this.file);
 //        this.fileWatcher.getFlag().addListener(new ChangeListener<Boolean>() {
