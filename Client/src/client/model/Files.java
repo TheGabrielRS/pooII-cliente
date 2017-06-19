@@ -16,21 +16,25 @@ import javafx.collections.ObservableList;
  * @author helio
  */
 public class Files {
-    String path = "C:\\Users\\helio\\Documents\\GitHub\\pooII-cliente\\Client\\src\\client\\images";
+    private int count;
+    private String path = "C:\\Users\\heliof\\Desktop\\pooII-cliente\\Client\\src\\client\\images";
 
-    public String getPath(){
+    public String getPath() {
         return this.path;
     }
-    
+
     public void setPath(String p) {
         this.path = p;
     }
-    
-    public int countFiles() {
-        int count = new File(path).list().length;
-        return count;
+
+    public int getCountFiles() {
+        return this.count;
     }
-  
+        
+    void setCountFiles(int count) {
+        this.count = count;
+    } 
+
     public ObservableList<String> getFilesNames() {
         List<String> results = new ArrayList<>();
 
@@ -39,11 +43,16 @@ public class Files {
 
         for (File file : files) {
             if (file.isFile()) {
-                results.add(file.getName());
+                if (file.getName().endsWith(".bmp") || file.getName().endsWith(".jpeg")) {
+                    results.add(file.getName());
+                }
             }
         }
 
         ObservableList<String> observableList = FXCollections.observableList(results);
+        
+        this.setCountFiles(observableList.size());
+        
         return observableList;
     }
 

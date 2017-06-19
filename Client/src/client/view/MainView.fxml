@@ -87,7 +87,7 @@
                            </font>
                         </Label>
                         <ListView fx:id="fileList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="SOMETIMES" />
-                        <Button mnemonicParsing="false" onAction="#onSend" text="Enviar">
+                        <Button fx:id="btnEnviar" mnemonicParsing="false" onAction="#onSend" text="Enviar">
                            <VBox.margin>
                               <Insets bottom="30.0" top="10.0" />
                            </VBox.margin>
