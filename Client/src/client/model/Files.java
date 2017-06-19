@@ -30,11 +30,10 @@ public class Files {
     public int getCountFiles() {
         return this.count;
     }
-    
+        
     void setCountFiles(int count) {
         this.count = count;
-    }
-    
+    } 
 
     public ObservableList<String> getFilesNames() {
         List<String> results = new ArrayList<>();

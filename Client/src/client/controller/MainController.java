@@ -25,6 +25,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import client.model.Conexao;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -32,6 +33,9 @@ import javafx.scene.paint.Paint;
 //import client.model.FileData;
 import javafx.scene.control.Button;
 =======
+=======
+import client.model.FileWatcher;
+>>>>>>> a64c381... thread de att dos arquivos
 import client.model.Files;
 import java.io.File;
 import java.util.Optional;
@@ -103,8 +107,9 @@ public class MainController {
     
 =======
 
-    Files file;
-    Integer counting;
+    private FileWatcher fileWatcher;
+    private Files file;
+    private Integer counting;
 
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
     /**
@@ -122,7 +127,7 @@ public class MainController {
         file = new Files();
         serverSends.setText("0");
         serverFaults.setText("0");
-        
+
         this.startCon("localhost", 3000); //Inicia a Thread de Gerenciamento com os valores padrões
 
 <<<<<<< HEAD
@@ -146,10 +151,17 @@ public class MainController {
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
 =======
     public void onSend() {
+<<<<<<< HEAD
         bottomHandler(true);   
         
         this.objConexao.getMensagem().set(file.getFilesNames().toString());
 >>>>>>> 6015c61... contador e arquivos
+=======
+        bottomHandler(true);
+
+        //this.objConexao.getMensagem().set(file.getFilesNames().toString());
+        this.objConexao.getMensagem().set((String) fileList.getSelectionModel().getSelectedItem());
+>>>>>>> a64c381... thread de att dos arquivos
 
         bottomHandler(false);
     }
@@ -240,7 +252,7 @@ public class MainController {
         dialog.setContentText("IP:");
 
         Optional<String> result = dialog.showAndWait();
-        
+
         this.reconnect = true;
         objConexao.endSocket();
         result.ifPresent(computerName -> this.startCon(computerName, 3000));
@@ -251,7 +263,7 @@ public class MainController {
     public void onFileDef() {
         try {
             Stage stage = App.getPrimaryStage();
-            
+
             final DirectoryChooser directoryChooser = new DirectoryChooser();
             final File selectedDirectory;
             selectedDirectory = directoryChooser.showDialog(stage);
@@ -262,6 +274,7 @@ public class MainController {
             this.populateIt();
             this.counting = file.getCountFiles();
             System.out.println(this.counting.toString());
+            startFileWatcher();
         } catch (Exception e) {
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
         }
@@ -349,13 +362,14 @@ public class MainController {
     }
 
     public void startCon(String host, int port) {
-        if (this.conexao != null) { //Caso haja uma thread de Conexão ela será interrompida
+        if (this.conexao != null) {
+            //Caso haja uma thread de Conexão ela será interrompida
             this.conexao.interrupt();
         }
 
-        //TODO review
-        //serverIP.setText("hahah"); //Atualiza o label de acordo com o host indicado
-        this.objConexao = new Conexao(host, port); //Instancia o objeto para que possa ser definido o listener responsável
+        //Instancia o objeto para que possa ser definido o listener responsável
+        this.objConexao = new Conexao(host, port);
+
         //Define listener para verificação de status da conexão Cliente/Servidor
         this.objConexao.getStatusConexao().addListener(new ChangeListener<Number>() {
             public void changed(final ObservableValue<? extends Number> observable,
@@ -497,17 +511,38 @@ public class MainController {
         this.conexao.setDaemon(true);
         this.conexao.start(); //Inicia a Thread de Conexão
     }
-    
-    public void serverCount(boolean response){
+
+    public void serverCount(boolean response) {
         Integer s;
         Integer f;
-        if(response){
+        if (response) {
             s = 1 + (Integer.parseInt(serverSends.getText().toString()));
             serverSends.setText(s.toString());
         } else {
             f = 1 + (Integer.parseInt(serverFaults.getText().toString()));
             serverFaults.setText(f.toString());
-        }        
-    }    
+        }
+    }
+
+    public void startFileWatcher() {
+        this.fileWatcher = new FileWatcher(this.file);
+        this.fileWatcher.getFlag().addListener(new ChangeListener<Boolean>() {
+            public void changed(final ObservableValue<? extends Boolean> observable,
+                    final Boolean oldValue, final Boolean newValue) {
+                if (newValue) {
+                    objConexao.getMensagem().set("fileWatcher:" 
+                            + (fileWatcher.getFile().getCountFiles()
+                            - fileWatcher.getInitCount()));
+                    System.out.println("deletou");
+                    Platform.runLater(()-> {
+                        populateIt();
+                    });
+                }
+            }
+        });
+        Thread t = new Thread(this.fileWatcher);
+        t.setDaemon(true);
+        t.start();
+    }
 }
 >>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
