@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -20,6 +19,7 @@ import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.ListView;
 
 /**
  *
@@ -90,6 +90,10 @@ public class Conexao implements Runnable{
     public BooleanProperty getAcabouTransacao() {
         return acabouTransacao;
     }
+
+    public String getComputerName() {
+        return computerName;
+    }
     
     public boolean sendFile(){
         try{
@@ -107,6 +111,10 @@ public class Conexao implements Runnable{
         }
     }
     
+    public void sendFiles(ListView list){
+        System.out.println("Lista toString: "+list.getItems().toString());
+    }
+    
     public void endSocket(){
         try{
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
@@ -120,6 +128,8 @@ public class Conexao implements Runnable{
         }
     }
 }
+<<<<<<< HEAD
+<<<<<<< HEAD
 =======
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -246,3 +256,7 @@ public class Conexao implements Runnable{
     }
 }
 >>>>>>> 6015c61... contador e arquivos
+=======
+>>>>>>> a49ad45... enviando lista inteira
+=======
+>>>>>>> a49ad45... enviando lista inteira
