@@ -4,22 +4,11 @@
  * and open the template in the editor.
  */
 package client.controller;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> a49ad45... enviando lista inteira
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-<<<<<<< HEAD
-=======
-
 import client.App;
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
-import client.App;
->>>>>>> a49ad45... enviando lista inteira
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -30,11 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import client.model.Conexao;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> a49ad45... enviando lista inteira
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -42,11 +26,7 @@ import javafx.scene.paint.Paint;
 //import client.model.FileData;
 import javafx.scene.control.Button;
 import client.model.FileWatcher;
-<<<<<<< HEAD
->>>>>>> a64c381... thread de att dos arquivos
-=======
 import client.model.FileWatcher;
->>>>>>> a49ad45... enviando lista inteira
 import client.model.Files;
 import java.io.File;
 import java.util.Optional;
@@ -74,34 +54,6 @@ public class MainController {
     @FXML Label tempoDecorridoPosT;
     @FXML ProgressBar progressBar;
     @FXML Button btnEnviar;
-<<<<<<< HEAD
-    
-=======
-
-    @FXML
-    Label serverIp;
-    @FXML
-    Label serverStatus;
-    @FXML
-    Label serverSends;
-    @FXML
-    Label serverFaults;
-    @FXML
-    ListView fileList;
-    @FXML
-    Label tempoDecorrido;
-    @FXML
-    Label tempoDecorridoPreT;
-    @FXML
-    Label tempoDecorridoPosT;
-    @FXML
-    ProgressBar progressBar;
-    @FXML
-    Button btnEnviar;
-
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
->>>>>>> a49ad45... enviando lista inteira
     //Flag para o temporizador
     private boolean flagTempo;
     //Task para o temporizador
@@ -109,94 +61,41 @@ public class MainController {
     private Thread conexao;
     private Conexao objConexao;
     private boolean reconnect;
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
-=======
->>>>>>> a49ad45... enviando lista inteira
+
      // Use Java Collections to create the List.
     List<String> list = new ArrayList<String>();
  
      // Now add observability by wrapping it with ObservableList.
     ObservableList<String> observableList = FXCollections.observableList(list);  
     
-<<<<<<< HEAD
-=======
-
-=======
->>>>>>> a49ad45... enviando lista inteira
     private FileWatcher fileWatcher;
     private Files file;
     private Integer counting;
 
-<<<<<<< HEAD
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
->>>>>>> a49ad45... enviando lista inteira
     /**
      * Initializes the controller class.
      */
     @FXML
     public void initialize() {
         // TODO
-<<<<<<< HEAD
-<<<<<<< HEAD
         populate();
         fileList.setItems(observableList);
         this.startCon("localhost",3000); //Inicia a Thread de Gerenciamento com os valores padrões
-        
-=======
         file = new Files();
-=======
         this.startCon("localhost",3000); //Inicia a Thread de Gerenciamento com os valores padrões
 //        populateIt();
 //        fileList.setItems(observableList);
         this.file = new Files();
->>>>>>> a49ad45... enviando lista inteira
         serverSends.setText("0");
         serverFaults.setText("0");
-
         this.startCon("localhost", 3000); //Inicia a Thread de Gerenciamento com os valores padrões
-<<<<<<< HEAD
-
-<<<<<<< HEAD
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
-        serverIp.setText(objConexao.getComputerName());
-
->>>>>>> 6015c61... contador e arquivos
-=======
->>>>>>> a49ad45... enviando lista inteira
+        serverIP.setText(objConexao.getComputerName());
     }
     
     @FXML
     public void onSend(){
         bottomHandler(true);
-<<<<<<< HEAD
-<<<<<<< HEAD
-                
-        this.objConexao.getMensagem().set((String)fileList.getSelectionModel().getSelectedItem());
-=======
-
-        this.objConexao.getMensagem().set((String) fileList.getSelectionModel().getSelectedItem());
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
-    public void onSend() {
-<<<<<<< HEAD
-        bottomHandler(true);   
-        
-        this.objConexao.getMensagem().set(file.getFilesNames().toString());
->>>>>>> 6015c61... contador e arquivos
-=======
-        bottomHandler(true);
-
-        //this.objConexao.getMensagem().set(file.getFilesNames().toString());
-        this.objConexao.getMensagem().set((String) fileList.getSelectionModel().getSelectedItem());
->>>>>>> a64c381... thread de att dos arquivos
-
-=======
         this.objConexao.getMensagem().set(this.fileList.getItems().toString());
->>>>>>> a49ad45... enviando lista inteira
         bottomHandler(false);
     }
     
@@ -214,20 +113,10 @@ public class MainController {
     
     @FXML
     public void onReconnect() {
-<<<<<<< HEAD
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
->>>>>>> a49ad45... enviando lista inteira
         this.reconnect = true;
         objConexao.endSocket();
         this.startCon(objConexao.getComputerName(), 3000); //Reinicia a Thread com os valores passados pelo usuário
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
-=======
-   
->>>>>>> a49ad45... enviando lista inteira
     public void alertOnReconnect(boolean success){
         if(this.reconnect){
         Alert alert = new Alert(AlertType.INFORMATION);
@@ -252,39 +141,8 @@ public class MainController {
         } else {
             progressBar.setDisable(key);
             progressBar.setProgress(0);
-<<<<<<< HEAD
-=======
-
-    public void alertOnReconnect(boolean success) {
-        if (this.reconnect) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Reconectando...");
-            alert.setHeaderText(null);
-            if (success) {
-                alert.setContentText("Conexão realizada com sucesso!");
-            } else {
-                alert.setContentText("Não foi possível reconectar!");
-            }
-            alert.showAndWait();
-        }
-        this.reconnect = false;
-    }
-
-    public void bottomHandler(boolean key) {
-        if (key) {
-            tempoDecorrido.setTextFill(Color.BLACK);
-            tempoDecorridoPreT.setTextFill(Color.BLACK);
-            tempoDecorridoPosT.setTextFill(Color.BLACK);
-            progressBar.setDisable(!key);
-            progressBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);;
-        } else {
-            progressBar.setDisable(key);
-            progressBar.setProgress(0);
-=======
->>>>>>> a49ad45... enviando lista inteira
         }
     }
-
     @FXML
     public void onIpDef() {
         TextInputDialog dialog = new TextInputDialog(objConexao.getComputerName());
@@ -317,26 +175,13 @@ public class MainController {
             System.out.println(this.counting.toString());
             startFileWatcherInteger();
         } catch (Exception e) {
-<<<<<<< HEAD
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
->>>>>>> a49ad45... enviando lista inteira
         }
     }
     
     /*
     * função de resposta do servidor
     * status, true para sucesso, false para falha
-<<<<<<< HEAD
-<<<<<<< HEAD
     */
-    public void response(boolean status){
-        if(status){
-=======
-     */
-=======
-    */
->>>>>>> a49ad45... enviando lista inteira
     public void response(boolean status) {
         if (status) {
             Alert alert = new Alert(AlertType.INFORMATION);
@@ -349,15 +194,7 @@ public class MainController {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Erro");
             alert.setHeaderText("Falha no envio!");
-<<<<<<< HEAD
-<<<<<<< HEAD
-            alert.setContentText("Ooops, confira a conexão com o servidor e" 
-=======
-            alert.setContentText("Ooops, confira a conexão com o servidor e"
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
-            alert.setContentText("Ooops, confira a conexão com o servidor e"
->>>>>>> a49ad45... enviando lista inteira
+        alert.setContentText("Ooops, confira a conexão com o servidor e"
                     + " sua conexão com a internet.");
             serverCount(false);
             alert.showAndWait();
@@ -398,35 +235,7 @@ public class MainController {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        if(newValue.intValue() == 1){
-<<<<<<< HEAD
-=======
-
-    //Função para popular a lista
-    public void populateIt() {
-        fileList.setItems(file.getFilesNames());
-    }
-
-    public void startCon(String host, int port) {
-        if (this.conexao != null) {
-            //Caso haja uma thread de Conexão ela será interrompida
-            this.conexao.interrupt();
-        }
-
-        //Instancia o objeto para que possa ser definido o listener responsável
-        this.objConexao = new Conexao(host, port);
-
-        //Define listener para verificação de status da conexão Cliente/Servidor
-        this.objConexao.getStatusConexao().addListener(new ChangeListener<Number>() {
-            public void changed(final ObservableValue<? extends Number> observable,
-                    final Number oldValue, final Number newValue) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
                         if (newValue.intValue() == 1) {
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
->>>>>>> a49ad45... enviando lista inteira
                             serverStatus.setText("Conectado");
                             serverStatus.setTextFill(Paint.valueOf(Color.GREEN.toString()));
                             btnEnviar.setDisable(false);
@@ -493,22 +302,10 @@ public class MainController {
         this.conexao = new Thread(objConexao); //define a Thread de Conexão com os devidos parâmetros 
         this.conexao.setDaemon(true);
         this.conexao.start(); //Inicia a Thread de Conexão
-<<<<<<< HEAD
-        
-        
-    }
-    
-}
-=======
-
-        this.conexao = new Thread(objConexao); //define a Thread de Conexão com os devidos parâmetros 
-        this.conexao.setDaemon(true);
-        this.conexao.start(); //Inicia a Thread de Conexão
-=======
         Platform.runLater(()->{
             serverIP.setText(this.objConexao.getComputerName());
         });
->>>>>>> a49ad45... enviando lista inteira
+
     }
 
     public void serverCount(boolean response) {
@@ -522,7 +319,6 @@ public class MainController {
             serverFaults.setText(f.toString());
         }
     }
-<<<<<<< HEAD
 
 //    public void startFileWatcher() {
 //        this.fileWatcher = new FileWatcher(this.file);
@@ -546,8 +342,6 @@ public class MainController {
 //        t.setDaemon(true);
 //        t.start();
 //    }
-=======
->>>>>>> a49ad45... enviando lista inteira
     
     public void startFileWatcherInteger(){
         this.fileWatcher = new FileWatcher(this.file);
