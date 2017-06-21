@@ -4,20 +4,11 @@
  * and open the template in the editor.
  */
 package client.controller;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-=======
-
 import client.App;
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
-
-import client.App;
->>>>>>> helio
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -25,26 +16,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.paint.Color;
-
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import client.model.Conexao;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Paint;
 //import client.model.FileData;
 import javafx.scene.control.Button;
-=======
-=======
 import client.model.FileWatcher;
->>>>>>> a64c381... thread de att dos arquivos
-=======
 import client.model.FileWatcher;
->>>>>>> helio
 import client.model.Files;
 import java.io.File;
 import java.util.Optional;
@@ -56,14 +38,12 @@ import javafx.scene.control.TextInputDialog;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
 /**
  * FXML Controller class
  *
  * @author heliof
  */
 public class MainController {
-<<<<<<< HEAD
     @FXML Label serverIP;
     @FXML Label serverStatus;
     @FXML Label serverSends;
@@ -74,34 +54,6 @@ public class MainController {
     @FXML Label tempoDecorridoPosT;
     @FXML ProgressBar progressBar;
     @FXML Button btnEnviar;
-    
-=======
-
-    @FXML
-    Label serverIp;
-    @FXML
-    Label serverStatus;
-    @FXML
-    Label serverSends;
-    @FXML
-    Label serverFaults;
-    @FXML
-    ListView fileList;
-    @FXML
-    Label tempoDecorrido;
-    @FXML
-    Label tempoDecorridoPreT;
-    @FXML
-    Label tempoDecorridoPosT;
-    @FXML
-    ProgressBar progressBar;
-    @FXML
-    Button btnEnviar;
-
-<<<<<<< HEAD
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
->>>>>>> helio
     //Flag para o temporizador
     private boolean flagTempo;
     //Task para o temporizador
@@ -109,89 +61,36 @@ public class MainController {
     private Thread conexao;
     private Conexao objConexao;
     private boolean reconnect;
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
      // Use Java Collections to create the List.
     List<String> list = new ArrayList<String>();
  
      // Now add observability by wrapping it with ObservableList.
     ObservableList<String> observableList = FXCollections.observableList(list);  
     
-=======
-=======
->>>>>>> helio
-
     private FileWatcher fileWatcher;
     private Files file;
     private Integer counting;
 
-<<<<<<< HEAD
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
->>>>>>> helio
     /**
      * Initializes the controller class.
      */
     @FXML
     public void initialize() {
         // TODO
-<<<<<<< HEAD
-<<<<<<< HEAD
-        populate();
-        fileList.setItems(observableList);
         this.startCon("localhost",3000); //Inicia a Thread de Gerenciamento com os valores padrões
-        
-=======
-=======
->>>>>>> helio
-        file = new Files();
+//        populateIt();
+//        fileList.setItems(observableList);
+        this.file = new Files();
         serverSends.setText("0");
         serverFaults.setText("0");
 
         this.startCon("localhost", 3000); //Inicia a Thread de Gerenciamento com os valores padrões
-
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
-        serverIp.setText(objConexao.getComputerName());
-
->>>>>>> 6015c61... contador e arquivos
-=======
-        serverIp.setText(objConexao.getComputerName());
-
->>>>>>> helio
     }
     
     @FXML
-<<<<<<< HEAD
     public void onSend(){
         bottomHandler(true);
-<<<<<<< HEAD
-                
-        this.objConexao.getMensagem().set((String)fileList.getSelectionModel().getSelectedItem());
-=======
-
-        this.objConexao.getMensagem().set((String) fileList.getSelectionModel().getSelectedItem());
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
-    public void onSend() {
-<<<<<<< HEAD
-        bottomHandler(true);   
-        
-        this.objConexao.getMensagem().set(file.getFilesNames().toString());
->>>>>>> 6015c61... contador e arquivos
-=======
-        bottomHandler(true);
-
-        //this.objConexao.getMensagem().set(file.getFilesNames().toString());
-        this.objConexao.getMensagem().set((String) fileList.getSelectionModel().getSelectedItem());
-<<<<<<< HEAD
->>>>>>> a64c381... thread de att dos arquivos
-=======
->>>>>>> helio
-
+        this.objConexao.getMensagem().set(this.fileList.getItems().toString());
         bottomHandler(false);
     }
     
@@ -208,21 +107,12 @@ public class MainController {
     }
     
     @FXML
-<<<<<<< HEAD
-    public void onReconnect(){
-=======
     public void onReconnect() {
-<<<<<<< HEAD
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
->>>>>>> helio
         this.reconnect = true;
         objConexao.endSocket();
         this.startCon(objConexao.getComputerName(), 3000); //Reinicia a Thread com os valores passados pelo usuário
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
+   
     public void alertOnReconnect(boolean success){
         if(this.reconnect){
         Alert alert = new Alert(AlertType.INFORMATION);
@@ -247,35 +137,6 @@ public class MainController {
         } else {
             progressBar.setDisable(key);
             progressBar.setProgress(0);
-=======
-=======
->>>>>>> helio
-
-    public void alertOnReconnect(boolean success) {
-        if (this.reconnect) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Reconectando...");
-            alert.setHeaderText(null);
-            if (success) {
-                alert.setContentText("Conexão realizada com sucesso!");
-            } else {
-                alert.setContentText("Não foi possível reconectar!");
-            }
-            alert.showAndWait();
-        }
-        this.reconnect = false;
-    }
-
-    public void bottomHandler(boolean key) {
-        if (key) {
-            tempoDecorrido.setTextFill(Color.BLACK);
-            tempoDecorridoPreT.setTextFill(Color.BLACK);
-            tempoDecorridoPosT.setTextFill(Color.BLACK);
-            progressBar.setDisable(!key);
-            progressBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);;
-        } else {
-            progressBar.setDisable(key);
-            progressBar.setProgress(0);
         }
     }
 
@@ -291,7 +152,7 @@ public class MainController {
         this.reconnect = true;
         objConexao.endSocket();
         result.ifPresent(computerName -> this.startCon(computerName, 3000));
-        serverIp.setText(objConexao.getComputerName());
+        this.serverIP.setText(objConexao.getComputerName());
     }
 
     @FXML
@@ -311,37 +172,15 @@ public class MainController {
             System.out.println(this.counting.toString());
             startFileWatcherInteger();
         } catch (Exception e) {
-<<<<<<< HEAD
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
->>>>>>> helio
         }
-    }
-    
-    @FXML
-    public void onIpDef(){
-        
-    }
-    @FXML
-    public void onFileDef(){
-        
     }
     
     /*
     * função de resposta do servidor
     * status, true para sucesso, false para falha
-<<<<<<< HEAD
-<<<<<<< HEAD
     */
-    public void response(boolean status){
-        if(status){
-=======
-=======
->>>>>>> helio
-     */
     public void response(boolean status) {
         if (status) {
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Sucesso!");
             alert.setHeaderText(null);
@@ -352,21 +191,16 @@ public class MainController {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Erro");
             alert.setHeaderText("Falha no envio!");
-<<<<<<< HEAD
-<<<<<<< HEAD
-            alert.setContentText("Ooops, confira a conexão com o servidor e" 
-=======
             alert.setContentText("Ooops, confira a conexão com o servidor e"
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
-            alert.setContentText("Ooops, confira a conexão com o servidor e"
->>>>>>> helio
                     + " sua conexão com a internet.");
             serverCount(false);
             alert.showAndWait();
         }
     }
-<<<<<<< HEAD
+    
+    public void populateIt() {
+        this.fileList.setItems(this.file.getFilesNames());
+    }
     
     //Função genérica para popular a lista
     public void populate(){
@@ -399,64 +233,25 @@ public class MainController {
                     @Override
                     public void run() {
                         if(newValue.intValue() == 1){
-=======
-
-    //Função para popular a lista
-    public void populateIt() {
-        fileList.setItems(file.getFilesNames());
-    }
-
-    public void startCon(String host, int port) {
-        if (this.conexao != null) {
-            //Caso haja uma thread de Conexão ela será interrompida
-            this.conexao.interrupt();
-<<<<<<< HEAD
-        }
-
-        //Instancia o objeto para que possa ser definido o listener responsável
-        this.objConexao = new Conexao(host, port);
-
-        //Define listener para verificação de status da conexão Cliente/Servidor
-        this.objConexao.getStatusConexao().addListener(new ChangeListener<Number>() {
-            public void changed(final ObservableValue<? extends Number> observable,
-                    final Number oldValue, final Number newValue) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (newValue.intValue() == 1) {
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
                             serverStatus.setText("Conectado");
                             serverStatus.setTextFill(Paint.valueOf(Color.GREEN.toString()));
                             btnEnviar.setDisable(false);
                             alertOnReconnect(true);
-<<<<<<< HEAD
                         }else{
-=======
-                        } else {
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
                             serverStatus.setText("Desconectado");
                             serverStatus.setTextFill(Paint.valueOf(Color.RED.toString()));
                             btnEnviar.setDisable(true);
                             alertOnReconnect(false);
                         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        
-=======
-                        serverIp.setText(objConexao.getComputerName());
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-=======
->>>>>>> 6015c61... contador e arquivos
                     }
                 });
             }
         });
-<<<<<<< HEAD
         
-        this.objConexao.getMensagem().addListener(new ChangeListener<String>(){
+        this.objConexao.getMensagem().addListener(new ChangeListener<String>() {
             public void changed(final ObservableValue<? extends String> observable,
-          final String oldValue, final String newValue){
-                response(objConexao.sendFile());
+                    final String oldValue, final String newValue) {
+                Platform.runLater(()->{response(objConexao.sendFile());});
             }
         });
         
@@ -478,35 +273,6 @@ public class MainController {
                                 float tempoMillis;
                                 float tempoSec;
                                 public void run(){
-=======
-
-        this.objConexao.getMensagem().addListener(new ChangeListener<String>() {
-            public void changed(final ObservableValue<? extends String> observable,
-                    final String oldValue, final String newValue) {
-                Platform.runLater(()->{response(objConexao.sendFile());});
-            }
-        });
-
-        this.objConexao.getTempoInicial().addListener(new ChangeListener<Number>() {
-            public void changed(final ObservableValue<? extends Number> observable,
-                    final Number oldValue, final Number newValue) {
-                /*
-                Define a Task de contagem de tempo e atualização na tela
-                 */
-                flagTempo = true;
-                taskTempo = new Task<Void>() {
-                    public Void call() {
-                        while (flagTempo) {
-                            try {
-                                Thread.sleep(500);
-                            } catch (Exception e) {
-                            }
-                            Platform.runLater(new Runnable() {
-                                float tempoMillis;
-                                float tempoSec;
-
-                                public void run() {
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
                                     tempoMillis = System.currentTimeMillis() - newValue.floatValue();
                                     tempoSec = tempoMillis / 1000F;
                                     tempoDecorrido.setText(Float.toString(tempoSec));
@@ -516,124 +282,7 @@ public class MainController {
                         return null;
                     }
                 };
-                new Thread(taskTempo).start(); //Inicia a thread com o contador de tempo
-<<<<<<< HEAD
-                
-            }
-        });
-        
-        this.objConexao.getAcabouTransacao().addListener(new ChangeListener<Boolean>(){
-            public void changed(final ObservableValue<? extends Boolean> observable,
-          final Boolean oldValue, final Boolean newValue){
-                if(newValue){
-=======
-
-            }
-        });
-
-        this.objConexao.getAcabouTransacao().addListener(new ChangeListener<Boolean>() {
-            public void changed(final ObservableValue<? extends Boolean> observable,
-                    final Boolean oldValue, final Boolean newValue) {
-                if (newValue) {
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
-                    flagTempo = false; //Encerra o loop da thread de contagem de tempo
-                    taskTempo.cancel(); //Encerra a task de contagem de tempo
-                }
-            }
-        });
-<<<<<<< HEAD
-        
-        this.conexao = new Thread(objConexao); //define a Thread de Conexão com os devidos parâmetros 
-        this.conexao.setDaemon(true);
-        this.conexao.start(); //Inicia a Thread de Conexão
-        
-        
-    }
-    
-}
-=======
-
-        this.conexao = new Thread(objConexao); //define a Thread de Conexão com os devidos parâmetros 
-        this.conexao.setDaemon(true);
-        this.conexao.start(); //Inicia a Thread de Conexão
-    }
-
-    public void serverCount(boolean response) {
-        Integer s;
-        Integer f;
-        if (response) {
-            s = 1 + (Integer.parseInt(serverSends.getText().toString()));
-            serverSends.setText(s.toString());
-        } else {
-            f = 1 + (Integer.parseInt(serverFaults.getText().toString()));
-            serverFaults.setText(f.toString());
-=======
->>>>>>> helio
-        }
-
-        //Instancia o objeto para que possa ser definido o listener responsável
-        this.objConexao = new Conexao(host, port);
-
-        //Define listener para verificação de status da conexão Cliente/Servidor
-        this.objConexao.getStatusConexao().addListener(new ChangeListener<Number>() {
-            public void changed(final ObservableValue<? extends Number> observable,
-                    final Number oldValue, final Number newValue) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (newValue.intValue() == 1) {
-                            serverStatus.setText("Conectado");
-                            serverStatus.setTextFill(Paint.valueOf(Color.GREEN.toString()));
-                            btnEnviar.setDisable(false);
-                            alertOnReconnect(true);
-                        } else {
-                            serverStatus.setText("Desconectado");
-                            serverStatus.setTextFill(Paint.valueOf(Color.RED.toString()));
-                            btnEnviar.setDisable(true);
-                            alertOnReconnect(false);
-                        }
-                    }
-                });
-            }
-        });
-
-        this.objConexao.getMensagem().addListener(new ChangeListener<String>() {
-            public void changed(final ObservableValue<? extends String> observable,
-                    final String oldValue, final String newValue) {
-                Platform.runLater(()->{response(objConexao.sendFile());});
-            }
-        });
-
-        this.objConexao.getTempoInicial().addListener(new ChangeListener<Number>() {
-            public void changed(final ObservableValue<? extends Number> observable,
-                    final Number oldValue, final Number newValue) {
-                /*
-                Define a Task de contagem de tempo e atualização na tela
-                 */
-                flagTempo = true;
-                taskTempo = new Task<Void>() {
-                    public Void call() {
-                        while (flagTempo) {
-                            try {
-                                Thread.sleep(500);
-                            } catch (Exception e) {
-                            }
-                            Platform.runLater(new Runnable() {
-                                float tempoMillis;
-                                float tempoSec;
-
-                                public void run() {
-                                    tempoMillis = System.currentTimeMillis() - newValue.floatValue();
-                                    tempoSec = tempoMillis / 1000F;
-                                    tempoDecorrido.setText(Float.toString(tempoSec));
-                                }
-                            });
-                        }
-                        return null;
-                    }
-                };
-                new Thread(taskTempo).start(); //Inicia a thread com o contador de tempo
-
+                new Thread(taskTempo).start(); //Inicia a thread com o contador de tempo                
             }
         });
 
@@ -646,14 +295,15 @@ public class MainController {
                 }
             }
         });
-
+        
         this.conexao = new Thread(objConexao); //define a Thread de Conexão com os devidos parâmetros 
         this.conexao.setDaemon(true);
         this.conexao.start(); //Inicia a Thread de Conexão
+        Platform.runLater(()->{
+            serverIP.setText(this.objConexao.getComputerName());
+        });
     }
 
-<<<<<<< HEAD
-=======
     public void serverCount(boolean response) {
         Integer s;
         Integer f;
@@ -665,30 +315,6 @@ public class MainController {
             serverFaults.setText(f.toString());
         }
     }
-
->>>>>>> helio
-//    public void startFileWatcher() {
-//        this.fileWatcher = new FileWatcher(this.file);
-//        this.fileWatcher.getFlag().addListener(new ChangeListener<Boolean>() {
-//            public void changed(final ObservableValue<? extends Boolean> observable,
-//                    final Boolean oldValue, final Boolean newValue) {
-//                if (newValue) {
-//                    objConexao.getMensagem().set("fileWatcher");
-//                    objConexao.getMensagem().set(fileWatcher.getFile().getCountFiles() 
-//                            + ":" 
-//                            + fileWatcher.getInitCount());
-//                    
-//                    System.out.println("deletou");
-//                    Platform.runLater(() -> {
-//                        populateIt();
-//                    });
-//                }
-//            }
-//        });
-//        Thread t = new Thread(this.fileWatcher);
-//        t.setDaemon(true);
-//        t.start();
-//    }
     
     public void startFileWatcherInteger(){
         this.fileWatcher = new FileWatcher(this.file);
@@ -727,4 +353,3 @@ public class MainController {
         t.start();
     }
 }
->>>>>>> 8bbb963... novo seletor de arquivos, realizando conexão
