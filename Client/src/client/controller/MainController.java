@@ -78,18 +78,12 @@ public class MainController {
     @FXML
     public void initialize() {
         // TODO
-        populate();
-        fileList.setItems(observableList);
-        this.startCon("localhost",3000); //Inicia a Thread de Gerenciamento com os valores padrões
-        file = new Files();
-        this.startCon("localhost",3000); //Inicia a Thread de Gerenciamento com os valores padrões
 //        populateIt();
 //        fileList.setItems(observableList);
         this.file = new Files();
-        serverSends.setText("0");
-        serverFaults.setText("0");
-        this.startCon("localhost", 3000); //Inicia a Thread de Gerenciamento com os valores padrões
-        serverIP.setText(objConexao.getComputerName());
+        this.serverSends.setText("0");
+        this.serverFaults.setText("0");
+        this.startCon("localhost", 3000); //Inicia a Thread de Conexão
     }
     
     @FXML
@@ -117,6 +111,7 @@ public class MainController {
         objConexao.endSocket();
         this.startCon(objConexao.getComputerName(), 3000); //Reinicia a Thread com os valores passados pelo usuário
     }
+    
     public void alertOnReconnect(boolean success){
         if(this.reconnect){
         Alert alert = new Alert(AlertType.INFORMATION);
@@ -173,7 +168,7 @@ public class MainController {
             this.populateIt();
             this.counting = file.getCountFiles();
             System.out.println(this.counting.toString());
-            startFileWatcherInteger();
+            this.startFileWatcherInteger();
         } catch (Exception e) {
         }
     }
@@ -220,7 +215,7 @@ public class MainController {
     }
     
     public void startCon(String host, int port){
-        if(this.conexao != null){ //Caso haja uma thread de Conexão ela será interrompida
+        if(this.conexao != null && this.conexao.isAlive()){ //Caso haja uma thread de Conexão ela será interrompida
             this.conexao.interrupt();
         }
         
@@ -304,8 +299,9 @@ public class MainController {
         this.conexao.start(); //Inicia a Thread de Conexão
         Platform.runLater(()->{
             serverIP.setText(this.objConexao.getComputerName());
+            serverSends.setText("0");
+            serverFaults.setText("0");
         });
-
     }
 
     public void serverCount(boolean response) {
@@ -319,29 +315,6 @@ public class MainController {
             serverFaults.setText(f.toString());
         }
     }
-
-//    public void startFileWatcher() {
-//        this.fileWatcher = new FileWatcher(this.file);
-//        this.fileWatcher.getFlag().addListener(new ChangeListener<Boolean>() {
-//            public void changed(final ObservableValue<? extends Boolean> observable,
-//                    final Boolean oldValue, final Boolean newValue) {
-//                if (newValue) {
-//                    objConexao.getMensagem().set("fileWatcher");
-//                    objConexao.getMensagem().set(fileWatcher.getFile().getCountFiles() 
-//                            + ":" 
-//                            + fileWatcher.getInitCount());
-//                    
-//                    System.out.println("deletou");
-//                    Platform.runLater(() -> {
-//                        populateIt();
-//                    });
-//                }
-//            }
-//        });
-//        Thread t = new Thread(this.fileWatcher);
-//        t.setDaemon(true);
-//        t.start();
-//    }
     
     public void startFileWatcherInteger(){
         this.fileWatcher = new FileWatcher(this.file);
