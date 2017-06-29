@@ -34,6 +34,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Paint;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -44,7 +45,7 @@ import javafx.stage.Stage;
  * @author heliof
  */
 public class MainController {
-    @FXML Label serverIP;
+    @FXML Label serverIp;
     @FXML Label serverStatus;
     @FXML Label serverSends;
     @FXML Label serverFaults;
@@ -54,36 +55,30 @@ public class MainController {
     @FXML Label tempoDecorridoPosT;
     @FXML ProgressBar progressBar;
     @FXML Button btnEnviar;
+    
     //Flag para o temporizador
     private boolean flagTempo;
+    
     //Task para o temporizador
     Task taskTempo;
     private Thread conexao;
     private Conexao objConexao;
     private boolean reconnect;
-
-     // Use Java Collections to create the List.
-    List<String> list = new ArrayList<String>();
- 
-     // Now add observability by wrapping it with ObservableList.
-    ObservableList<String> observableList = FXCollections.observableList(list);  
     
     private FileWatcher fileWatcher;
     private Files file;
     private Integer counting;
 
-    /**
-     * Initializes the controller class.
-     */
+
     @FXML
     public void initialize() {
-        // TODO
-//        populateIt();
-//        fileList.setItems(observableList);
+
         this.file = new Files();
         this.serverSends.setText("0");
         this.serverFaults.setText("0");
-        this.startCon("localhost", 3000); //Inicia a Thread de Conexão
+        
+        //Inicia a Thread de Conexão
+        this.startCon("localhost", 3000); 
     }
     
     @FXML
@@ -100,7 +95,11 @@ public class MainController {
         alert.setHeaderText("Aplicação cliente");
         alert.setContentText("Autores:" + 
                 "\n" + "Gabriel Ramos dos Santos" +
-                "\n" + "Hélio Francisco das Neves Silveira Jr.");
+                "\n" + "Hélio Francisco das Neves Silveira Jr." +
+                "\n" + 
+                "\n" + "");
+        
+
 
         alert.showAndWait();    
     }
@@ -109,7 +108,8 @@ public class MainController {
     public void onReconnect() {
         this.reconnect = true;
         objConexao.endSocket();
-        this.startCon(objConexao.getComputerName(), 3000); //Reinicia a Thread com os valores passados pelo usuário
+        //Reinicia a Thread com os valores passados pelo usuário
+        this.startCon(objConexao.getComputerName(), 3000); 
     }
     
     public void alertOnReconnect(boolean success){
@@ -138,6 +138,7 @@ public class MainController {
             progressBar.setProgress(0);
         }
     }
+    
     @FXML
     public void onIpDef() {
         TextInputDialog dialog = new TextInputDialog(objConexao.getComputerName());
@@ -150,7 +151,6 @@ public class MainController {
         this.reconnect = true;
         objConexao.endSocket();
         result.ifPresent(computerName -> this.startCon(computerName, 3000));
-        this.serverIP.setText(objConexao.getComputerName());
     }
 
     @FXML
@@ -200,29 +200,16 @@ public class MainController {
         this.fileList.setItems(this.file.getFilesNames());
     }
     
-    //Função genérica para popular a lista
-    public void populate(){
-        list.add("nudes.jpg");
-        list.add("bolo+de+leite+18.rar");
-        list.add("receita_dieta.zip");
-        list.add("receita_dieta2.zip");
-        list.add("receita_dieta3.zip");
-        list.add("receita_dieta4.zip");
-        list.add("receita_dieta5.zip");
-        list.add("receita_dieta6.zip");
-        list.add("organela.jpeg");
-        list.add("SsdasDIAJNONSDssd.bat");
-    }
     
     public void startCon(String host, int port){
-        if(this.conexao != null && this.conexao.isAlive()){ //Caso haja uma thread de Conexão ela será interrompida
+        if(this.conexao != null && this.conexao.isAlive()){ 
+        //Caso haja uma thread de Conexão ela será interrompida
             this.conexao.interrupt();
         }
         
-        //TODO review
-        //serverIP.setText("hahah"); //Atualiza o label de acordo com o host indicado
+        //Instancia o objeto para que possa ser definido o listener responsável       
+        this.objConexao = new Conexao(host, port);
         
-        this.objConexao = new Conexao(host, port); //Instancia o objeto para que possa ser definido o listener responsável
         //Define listener para verificação de status da conexão Cliente/Servidor
         this.objConexao.getStatusConexao().addListener(new ChangeListener<Number>(){
             public void changed(final ObservableValue<? extends Number> observable,
@@ -241,6 +228,7 @@ public class MainController {
                             btnEnviar.setDisable(true);
                             alertOnReconnect(false);
                         }
+                        serverIp.setText(objConexao.getComputerName());
                     }
                 });
             }
@@ -256,9 +244,8 @@ public class MainController {
         this.objConexao.getTempoInicial().addListener(new ChangeListener<Number>(){
             public void changed(final ObservableValue<? extends Number> observable,
           final Number oldValue, final Number newValue){
-                /*
-                Define a Task de contagem de tempo e atualização na tela
-                */
+                
+                //Define a Task de contagem de tempo e atualização na tela
                 flagTempo = true;
                 taskTempo = new Task<Void>(){
                     public Void call(){
@@ -298,7 +285,7 @@ public class MainController {
         this.conexao.setDaemon(true);
         this.conexao.start(); //Inicia a Thread de Conexão
         Platform.runLater(()->{
-            serverIP.setText(this.objConexao.getComputerName());
+            serverIp.setText(this.objConexao.getComputerName());
             serverSends.setText("0");
             serverFaults.setText("0");
         });
